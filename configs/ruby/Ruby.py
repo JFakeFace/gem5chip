@@ -269,7 +269,7 @@ def create_system(
 
     # Initialize network based on topology
     Network.init_network(options, network, InterfaceClass)
-
+    print(network.ext_links[0].ext_net_bridge[0])
     # Create a port proxy for connecting the system port. This is
     # independent of the protocol and kept in the protocol-agnostic
     # part (i.e. here).

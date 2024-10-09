@@ -1214,6 +1214,7 @@ class Packet : public Printable, public Extensible<Packet>
     {
         assert(flags.noneSet(STATIC_DATA|DYNAMIC_DATA));
         data = (PacketDataPtr)p;
+	//std::cout << "dataDynamic: data:##" << static_cast<int>(p[0]) <<" hasdata"<<hasData()<< std::endl;
         flags.set(DYNAMIC_DATA);
     }
 
@@ -1226,6 +1227,7 @@ class Packet : public Printable, public Extensible<Packet>
     {
         assert(flags.isSet(STATIC_DATA|DYNAMIC_DATA));
         assert(!isMaskedWrite());
+	//std::cout << "getPtr: data:##" << static_cast<int>(data[0]) << std::endl;
         return (T*)data;
     }
 
@@ -1234,6 +1236,7 @@ class Packet : public Printable, public Extensible<Packet>
     getConstPtr() const
     {
         assert(flags.isSet(STATIC_DATA|DYNAMIC_DATA));
+	//std::cout << "getConstPtr: data:##" << static_cast<int>(data[0]) << std::endl;
         return (const T*)data;
     }
 
@@ -1296,11 +1299,11 @@ class Packet : public Printable, public Extensible<Packet>
         // must idenfity packets with static data, as they carry the
         // same pointer from source to destination and back
         assert(p != getPtr<uint8_t>() || flags.isSet(STATIC_DATA));
-
         if (p != getPtr<uint8_t>()) {
             // for packet with allocated dynamic data, we copy data from
             // one to the other, e.g. a forwarded response to a response
             std::memcpy(getPtr<uint8_t>(), p, getSize());
+	    
         }
     }
 

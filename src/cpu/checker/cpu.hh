@@ -105,13 +105,13 @@ class CheckerCPU : public BaseCPU, public ExecContext
     {
         // the checker does not have ports on its own so return the
         // data port of the actual CPU core
-        assert(dcachePort);
+        assert(dcachePort != NULL);
         return *dcachePort;
     }
 
     Port &
     getInstPort() override
-    {
+    {	std::cout<<"icacheport "<<*icachePort<<std::endl;
         // the checker does not have ports on its own so return the
         // data port of the actual CPU core
         assert(icachePort);

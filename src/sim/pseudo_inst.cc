@@ -44,7 +44,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-
+#include<iostream>
 #include <array>
 #include <cerrno>
 #include <fstream>
@@ -53,7 +53,7 @@
 
 #include "base/debug.hh"
 #include "base/output.hh"
-#include "cpu/base.hh"
+#include "cpu/simple/timing.hh"
 #include "cpu/thread_context.hh"
 #include "debug/Loader.hh"
 #include "debug/Quiesce.hh"
@@ -279,7 +279,90 @@ addsymbol(ThreadContext *tc, Addr addr, Addr symbolAddr)
           loader::Symbol::SymbolType::Function, symbol, addr }
     );
 }
+void gadia_call(ThreadContext *tc, uint64_t srcCore = 0, uint64_t targetCoreNum = 1, uint64_t data = 0, uint64_t init = 0){
+    unsigned srcCore_c = (unsigned)srcCore;
+    unsigned targetCoreNum_c = (unsigned)targetCoreNum;
+    auto cpu = dynamic_cast<gem5::TimingSimpleCPU*>(tc->getCpuPtr());
+    unsigned destination = targetCoreNum_c;
 
+    // 设置目标物理地址
+    Addr paddr = destination;
+    paddr = 0x0ul; // 假设目标地址需要移位，这可以根据具体需求调整
+    unsigned access_size = sizeof(data); // 数据大小
+    
+    RequestPtr req = nullptr;
+    Request::Flags flags = Request::PHYSICAL | Request::UNCACHEABLE; // 设置标志
+    req = std::make_shared<Request>(paddr, access_size, flags, cpu->dataRequestorId());
+    req->setContext(srcCore_c);
+
+    // 准备数据
+    uint8_t* buffer_data = new uint8_t[req->getSize()];
+    buffer_data[0] = (uint8_t)data;
+
+    // 发送数据请求
+    cpu->sendData(req, buffer_data, nullptr, false);
+
+    // 清理动态分配的内存
+   // delete[] data_1;
+}
+
+static long long gadia_last_position = 0;
+uint64_t gadia_receive(ThreadContext* tc, uint64_t srcCoreNumber){
+      // srcCore,TargetCore(-1 means all),data(int)
+
+    std::string fileName = "communication";
+
+
+    int srcCore = (int)srcCoreNumber;
+
+
+    fileName += ((int)srcCoreNumber) + '0';
+
+  
+    std::ifstream file;
+    file.open(fileName, std::ios::in);
+
+    std::stringstream ss;
+    std::string line = "";
+    //std::cout << fileName << "  ";
+
+    if (!file.is_open()) {
+	//std::cout << "invalid file with Core number" << srcCore <<" its real name is " <<  fileName;
+	std::cout << srcCore <<  "  " << fileName << std::endl;
+	return (uint64_t)-3;
+    }
+
+    file.seekg(gadia_last_position);
+
+    while(std::getline(file, line)){
+	ss.clear();
+	ss.str(line);
+
+	int a;
+	int b;
+	int c;
+	unsigned long long time;
+	ss >> time;
+	ss >> a;
+	ss >> b;
+	ss >> c;
+
+        std::cout << time << "    " << a << "    " << b << "    " << c << std::endl;
+
+        if(int(srcCore) == b || (-1 == b && a != (int)srcCore)){
+	    gadia_last_position = file.tellg();
+            file.close();
+            return c;
+
+        }
+
+    }
+
+    return (uint64_t)-1;
+
+
+
+}
 uint64_t
 initParam(ThreadContext *tc, uint64_t key_str1, uint64_t key_str2)
 {

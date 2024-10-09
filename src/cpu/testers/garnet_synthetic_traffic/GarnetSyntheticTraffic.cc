@@ -128,9 +128,9 @@ void
 GarnetSyntheticTraffic::completeRequest(PacketPtr pkt)
 {
     DPRINTF(GarnetSyntheticTraffic,
-            "Completed injection of %s packet for address %x\n",
+            "Completed injection of %s packet for address %x data: %d\n",
             pkt->isWrite() ? "write" : "read\n",
-            pkt->req->getPaddr());
+            pkt->req->getPaddr(),pkt->getPtr<uint8_t>()[0]);
 
     assert(pkt->isResponse());
     noResponseCycles = 0;
@@ -290,7 +290,7 @@ GarnetSyntheticTraffic::generatePkt()
 
     if (injReqType == 0) {
         // generate packet for virtual network 0
-        requestType = MemCmd::ReadReq;
+        requestType = MemCmd::WriteReq;
         req = std::make_shared<Request>(paddr, access_size, flags,
                                         requestorId);
     } else if (injReqType == 1) {
@@ -315,9 +315,10 @@ GarnetSyntheticTraffic::generatePkt()
     DPRINTF(GarnetSyntheticTraffic,
             "Generated packet with destination %d, embedded in address %x\n",
             destination, req->getPaddr());
-
+    uint8_t* buffer_data = new uint8_t[req->getSize()];
+    buffer_data[0] = 2;
     PacketPtr pkt = new Packet(req, requestType);
-    pkt->dataDynamic(new uint8_t[req->getSize()]);
+    pkt->dataDynamic(buffer_data);
     pkt->senderState = NULL;
 
     sendPkt(pkt);

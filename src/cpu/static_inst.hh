@@ -57,6 +57,8 @@
 #include "cpu/static_inst_fwd.hh"
 #include "enums/StaticInstFlags.hh"
 #include "sim/byteswap.hh"
+#include "mem/packet.hh"
+
 
 namespace gem5
 {
@@ -298,13 +300,43 @@ class StaticInst : public RefCounted, public StaticInstFlags
         panic("initiateAcc not defined!");
     }
 
-    virtual Fault
-    completeAcc(Packet *pkt, ExecContext *xc,
-            trace::InstRecord *trace_data) const
+virtual Fault completeAcc(Packet *pkt, ExecContext *xc, trace::InstRecord *trace_data) const
     {
-        panic("completeAcc not defined!");
-    }
+        // 检查数据包是否为空
+        if (!pkt) {
+            panic("Packet is null!");
+          
+        }
 
+        // 检查执行上下文是否为空
+        if (!xc) {
+            panic("ExecContext is null!");
+           
+        }
+	
+        // 从数据包中获取数据并处理
+        if (pkt->isRead()) {
+          //  uint8_t* data = pkt->getPtr<uint8_t>();
+            // 这里你可以添加处理读取数据的逻辑
+            std::cout<<"jiaxuming1111\n";
+        } else if (pkt->isWrite()) {
+            //const uint8_t* data = pkt->getConstPtr<uint8_t>();
+            // 这里你可以添加处理写入数据的逻辑
+            std::cout<<"jiaxuming2222\n";
+        } else {
+            panic("Unsupported packet type!");
+          
+        }
+
+        // 更新trace数据（如果需要）
+        if (trace_data) {
+		 std::cout<<"jiaxuming3333\n";
+          //  trace_data.setData(pkt->getConstPtr<uint8_t>(), pkt->getSize());
+        }
+
+        // 返回无故障
+        return NoFault;
+    }
     virtual void advancePC(PCStateBase &pc_state) const = 0;
     virtual void advancePC(ThreadContext *tc) const;
 

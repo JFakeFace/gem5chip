@@ -57,7 +57,7 @@
 #include "debug/LSQ.hh"
 #include "debug/Writeback.hh"
 #include "params/BaseO3CPU.hh"
-
+#include "cpu/o3/dyn_inst.hh"
 namespace gem5
 {
 
@@ -187,7 +187,19 @@ LSQ::cacheBlocked() const
 {
     return _cacheBlocked;
 }
-
+void LSQ::sendPkt(PacketPtr pkt) {
+    getDataPort().sendTimingReq(pkt);
+}
+void
+LSQ::completeRequest(PacketPtr pkt)
+{
+    DPRINTF(LSQ,
+            "Completed injection of %s packet for address %x data: %d\n",
+            pkt->isWrite() ? "write" : "read\n",
+            pkt->req->getPaddr(),pkt->getPtr<uint8_t>()[0]);
+    assert(pkt->isResponse());
+    delete pkt;
+}
 void
 LSQ::cacheBlocked(bool v)
 {
@@ -405,7 +417,7 @@ LSQ::recvTimingResp(PacketPtr pkt)
     if (pkt->isError())
         DPRINTF(LSQ, "Got error packet back for address: %#X\n",
                 pkt->getAddr());
-
+    //std::cout<<"senderstate  :" <<pkt->senderState<<std::endl;
     LSQRequest *request = dynamic_cast<LSQRequest*>(pkt->senderState);
     panic_if(!request, "Got packet back with unknown sender state\n");
 

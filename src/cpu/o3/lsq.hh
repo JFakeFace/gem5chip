@@ -85,12 +85,13 @@ class LSQ
       protected:
 
         /** Pointer to LSQ. */
-        LSQ *lsq;
-        CPU *cpu;
+ 
 
       public:
         /** Default constructor. */
         DcachePort(LSQ *_lsq, CPU *_cpu);
+	LSQ *lsq;
+        CPU *cpu;
 
       protected:
 
@@ -259,7 +260,7 @@ class LSQ
         AtomicOpFunctorPtr _amo_op;
         bool _hasStaleTranslation;
 
-      protected:
+      
         LSQUnit* lsqUnit() { return &_port; }
         LSQRequest(LSQUnit* port, const DynInstPtr& inst, bool isLoad);
         LSQRequest(LSQUnit* port, const DynInstPtr& inst, bool isLoad,
@@ -890,7 +891,9 @@ class LSQ
     void cachePortBusy(bool is_load);
 
     RequestPort &getDataPort() { return dcachePort; }
-
+    void sendPkt(PacketPtr pkt);
+    void completeRequest(PacketPtr pkt);
+    void doRetry();
   protected:
     /** D-cache is blocked */
     bool _cacheBlocked;

@@ -65,6 +65,7 @@ from common import (
     ObjectList,
     Options,
     Simulation,
+    ownL3
 )
 from common.Caches import *
 from common.cpu2000 import *
@@ -80,8 +81,11 @@ def get_processes(args):
     outputs = []
     errouts = []
     pargs = []
-
+    print('chipids', args.chip_id)
+    chip_ids = args.chip_id.split(";")
+    print('chipids', chip_ids)
     workloads = args.cmd.split(";")
+    print('workloads:',workloads)
     if args.input != "":
         inputs = args.input.split(";")
     if args.output != "":
@@ -92,12 +96,11 @@ def get_processes(args):
         pargs = args.options.split(";")
 
     idx = 0
-    for wrkld in workloads:
+    for i,wrkld in enumerate(workloads):
         process = Process(pid=100 + idx)
         process.executable = wrkld
         process.cwd = os.getcwd()
         process.gid = os.getgid()
-
         if args.env:
             with open(args.env) as f:
                 process.env = [line.rstrip() for line in f]
@@ -105,7 +108,7 @@ def get_processes(args):
         if len(pargs) > idx:
             process.cmd = [wrkld] + pargs[idx].split()
         else:
-            process.cmd = [wrkld]
+            process.cmd = [wrkld,chip_ids[i],args.chip_num,args.N]
 
         if len(inputs) > idx:
             process.input = inputs[idx]
@@ -140,7 +143,7 @@ if "--ruby" in sys.argv:
 args = parser.parse_args()
 
 multiprocesses = []
-numThreads = 1
+numThreads = 2
 
 if args.bench:
     apps = args.bench.split("-")
@@ -278,7 +281,6 @@ if args.ruby:
         # Note that the interrupt controller is always present but only
         # in x86 does it have message ports that need to be connected
         system.cpu[i].createInterruptController()
-
         # Connect the cpu's cache ports to Ruby
         ruby_port.connectCpuPorts(system.cpu[i])
 else:
@@ -286,6 +288,7 @@ else:
     system.membus = SystemXBar()
     system.system_port = system.membus.cpu_side_ports
     CacheConfig.config_cache(args, system)
+    #ownL3.config_cache(args, system)
     MemConfig.config_mem(args, system)
     config_filesystem(system, args)
 

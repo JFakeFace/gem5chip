@@ -266,6 +266,21 @@ def addCommonOptions(parser, default_isa: Optional[ISA] = None):
         help="type of cpu to run with",
     )
     parser.add_argument(
+        "--chip_id",
+        default= '-1',
+        help="Config the chip id",
+    )
+    parser.add_argument(
+        "--chip_num",
+        default= '-1',
+        help="Config the chip num",
+    )
+    parser.add_argument(
+        "--N",
+        default= '-1',
+        help="Config the chip id",
+    )
+    parser.add_argument(
         "--list-bp-types",
         action=ListBp,
         nargs=0,

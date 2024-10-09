@@ -54,7 +54,7 @@ def define_options(parser):
     )
     parser.add_argument(
         "--network",
-        default="simple",
+        default="garnet",
         choices=["simple", "garnet"],
         help="""'simple'|'garnet' (garnet2.0 will be deprecated.)""",
     )
@@ -123,7 +123,26 @@ def define_options(parser):
         help="""SimpleNetwork links uses a separate physical
             channel for each virtual network""",
     )
-
+    parser.add_argument("--chiplet-link-latency", action="store", type=int, default=1,
+                      help="""latency of chiplet link in garnet networks.
+                            Has to be >= 1.
+                            Can be over-ridden on a per link basis
+                            in the topology file.""")
+    parser.add_argument("--chiplet-link-width", action="store", type=int,
+                      default=128,
+                      help="default width in bits for links inside garnet.")
+    parser.add_argument("--interposer-link-latency", action="store", type=int, default=1,
+                      help="""latency of interposer link in garnet networks.
+                            Has to be >= 1.
+                            Can be over-ridden on a per link basis
+                            in the topology file.""")
+    parser.add_argument("--interposer-link-width", action="store", type=int,
+                      default=32,
+                      help="default width in bits for links inside garnet.")
+    parser.add_argument("--clip-logic-ifc-delay", action="store", type=int, default=1,
+                      help="delay due to chiplet logical protocol interface")
+    parser.add_argument("--clip-phys-ifc-delay", action="store", type=int, default=1,
+                      help="delay due to chiplet physical interface")
 
 def create_network(options, ruby):
     # Allow legacy users to use garnet through garnet2.0 option

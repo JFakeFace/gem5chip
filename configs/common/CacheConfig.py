@@ -75,6 +75,9 @@ def _get_cache_opts(level, options):
     return opts
 
 
+
+
+
 def config_cache(options, system):
     if options.external_memory_system and (options.caches or options.l2cache):
         print("External caches and internal caches are exclusive options.\n")

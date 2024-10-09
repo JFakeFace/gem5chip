@@ -94,7 +94,8 @@ void workend(ThreadContext *tc, uint64_t workid, uint64_t threadid);
 void m5Syscall(ThreadContext *tc);
 void togglesync(ThreadContext *tc);
 void triggerWorkloadEvent(ThreadContext *tc);
-
+void gadia_call(ThreadContext *tc, uint64_t a, uint64_t b, uint64_t c, uint64_t d);
+uint64_t gadia_receive(ThreadContext* tc, uint64_t a);
 /**
  * Execute a decoded M5 pseudo instruction
  *
@@ -214,7 +215,12 @@ pseudoInstWork(ThreadContext *tc, uint8_t func, uint64_t &result)
         return true;
 
       case M5OP_RESERVED1:
+	invokeSimcall<ABI>(tc,gadia_call);
+	return true;
+	
       case M5OP_RESERVED2:
+	result = invokeSimcall<ABI, store_ret>(tc,gadia_receive);
+	return true;
       case M5OP_RESERVED3:
       case M5OP_RESERVED4:
       case M5OP_RESERVED5:

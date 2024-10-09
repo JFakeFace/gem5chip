@@ -435,7 +435,9 @@ class CPUSequencerWrapper:
     def connectCpuPorts(self, cpu):
         assert isinstance(cpu, BaseCPU)
         cpu.icache_port = self.inst_seq.in_ports
+        
         for p in cpu._cached_ports:
+            print("connectCpuPort: ##",str(p))
             if str(p) != "icache_port":
                 exec(f"cpu.{p} = self.data_seq.in_ports")
         cpu.connectUncachedPorts(

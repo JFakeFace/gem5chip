@@ -133,7 +133,7 @@ class GarnetExtLink(BasicExtLink):
     # Out uni-directional link
     _nls.append(NetworkLink())
     network_links = VectorParam.NetworkLink(_nls, "forward links")
-
+    
     _cls = []
     # In uni-directional link
     _cls.append(CreditLink())

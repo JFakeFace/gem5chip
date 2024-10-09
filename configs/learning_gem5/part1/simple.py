@@ -113,6 +113,6 @@ root = Root(full_system=False, system=system)
 # instantiate all of the objects we've created above
 m5.instantiate()
 
-print(f"Beginning simulation!")
+print(f"Beginning simulation!")z
 exit_event = m5.simulate()
 print(f"Exiting @ tick {m5.curTick()} because {exit_event.getCause()}")

@@ -44,6 +44,7 @@ from ruby import Ruby
 config_path = os.path.dirname(os.path.abspath(__file__))
 config_root = os.path.dirname(config_path)
 m5_root = os.path.dirname(config_root)
+print(config_path,config_root,m5_root,"###########")
 
 parser = argparse.ArgumentParser()
 Options.addNoISAOptions(parser)

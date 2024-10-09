@@ -56,7 +56,8 @@ class TimingSimpleCPU : public BaseSimpleCPU
 
     TimingSimpleCPU(const BaseTimingSimpleCPUParams &params);
     virtual ~TimingSimpleCPU();
-
+    void sendData(const RequestPtr &req,
+                  uint8_t *data, uint64_t *res, bool read);
     void init() override;
 
   private:
@@ -135,8 +136,7 @@ class TimingSimpleCPU : public BaseSimpleCPU
     FetchTranslation fetchTranslation;
 
     void threadSnoop(PacketPtr pkt, ThreadID sender);
-    void sendData(const RequestPtr &req,
-                  uint8_t *data, uint64_t *res, bool read);
+    
     void sendSplitData(const RequestPtr &req1, const RequestPtr &req2,
                        const RequestPtr &req,
                        uint8_t *data, bool read);

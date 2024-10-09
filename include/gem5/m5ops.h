@@ -35,7 +35,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#include <gem5/asm/generic/m5ops.h>
+#include "asm/generic/m5ops.h"
 
 void m5_arm(uint64_t address);
 void m5_quiesce(void);
@@ -58,6 +58,9 @@ void m5_dump_reset_stats(uint64_t ns_delay, uint64_t ns_period);
 uint64_t m5_read_file(void *buffer, uint64_t len, uint64_t offset);
 uint64_t m5_write_file(void *buffer, uint64_t len, uint64_t offset,
                        const char *filename);
+void m5_gadia_call(uint64_t a, uint64_t b, uint64_t c, uint64_t d);
+uint64_t m5_gadia_receive(uint64_t srcCoreNum);
+
 void m5_debug_break(void);
 void m5_switch_cpu(void);
 void m5_dist_toggle_sync(void);
